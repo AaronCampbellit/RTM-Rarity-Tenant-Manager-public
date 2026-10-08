@@ -1,0 +1,159 @@
+@import "tailwindcss";
+
+/*
+  RTM Console design tokens — canonical values from the design handoff
+  (design_handoff_rtm_console/README.md → "Design Tokens").
+  Dark-grey surface palette, single red accent, Fluent-adjacent, data-dense.
+*/
+
+@theme {
+  /* ---- Surfaces (dark grey) ---- */
+  --color-app: #161619; /* page / content area */
+  --color-sidebar: #1b1b1f; /* left rail */
+  --color-header: #191a1d; /* top bar */
+  --color-card: #1e1e22; /* cards, tables, modals */
+  --color-th: #212126; /* sticky table header row */
+  --color-control: #222227; /* inputs, secondary buttons */
+  --color-raised: #26262c; /* switcher, menus, inset blocks */
+  --color-hover: #2b2b32; /* control hover */
+  --color-hover-2: #33333b; /* control hover (stronger) */
+  --color-avatar: #3a3a42; /* initials circles */
+
+  /* ---- Text ---- */
+  --color-fg: #e8e8ec; /* primary */
+  --color-fg-strong: #ececf0;
+  --color-body: #d2d2d8;
+  --color-secondary: #9b9ba4;
+  --color-muted: #83838d;
+  --color-faint: #74747e; /* labels / icons */
+  --color-faint-2: #5a5a64;
+
+  /* ---- Accent + status ---- */
+  --color-accent: #e5484d;
+  --color-accent-text: #fbabad;
+  --color-success: #56d364;
+  --color-danger: #f7868a;
+  --color-warning: #e3b341;
+  --color-info: #79a8ff;
+  --color-neutral: #a2a2ab;
+
+  /* ---- Radius ---- */
+  --radius-badge: 5px;
+  --radius-control: 8px;
+  --radius-card: 12px;
+  --radius-pill: 20px;
+
+  /* ---- Type ---- */
+  --font-sans: "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system,
+    BlinkMacSystemFont, sans-serif;
+  --font-mono: "Cascadia Code", "SF Mono", "Segoe UI Mono", ui-monospace,
+    Menlo, Consolas, monospace;
+}
+
+/*
+  Runtime theme variables (the prototype exposes accent + density as live vars).
+  Kept separate from @theme so they can be swapped at runtime via JS.
+*/
+:root {
+  --ac: #e5484d; /* accent */
+  --acb: rgba(229, 72, 77, 0.14); /* accent tint bg */
+  --act: #fbabad; /* accent light text */
+  --rp: 7px; /* table cell vertical padding (Compact=7, Comfortable=11) */
+
+  /* status backgrounds */
+  --bg-success: rgba(63, 185, 80, 0.13);
+  --bg-danger: rgba(229, 72, 77, 0.15);
+  --bg-warning: rgba(210, 161, 6, 0.15);
+  --bg-info: rgba(91, 141, 239, 0.15);
+  --bg-neutral: rgba(255, 255, 255, 0.07);
+
+  /* borders */
+  --border-chrome: rgba(255, 255, 255, 0.07);
+  --border-card: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.13);
+  --row-hover: rgba(255, 255, 255, 0.035);
+  --shadow-drawer: -24px 0 70px rgba(0, 0, 0, 0.5);
+
+  color-scheme: dark;
+}
+
+* {
+  border-color: var(--border-card);
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--color-app);
+  color: var(--color-body);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Tabular figures for numeric / ID columns */
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+.mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Thin dark scrollbars to match the chrome */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #2b2b32 transparent;
+}
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+*::-webkit-scrollbar-thumb {
+  background: #2b2b32;
+  border-radius: 8px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+/* ---- Motion (fade on mount, pop on menus/modals) ---- */
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+@keyframes drawer-in {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+.animate-fade {
+  animation: fade 0.2s ease forwards;
+}
+.animate-pop {
+  animation: pop 0.16s ease forwards;
+}

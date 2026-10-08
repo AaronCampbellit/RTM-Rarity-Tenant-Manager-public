@@ -1,0 +1,61 @@
+# RTM self-hosted deployment (ADR-017: Docker Compose on Linux, no Kubernetes).
+# BETA note: the api/worker images build from the Go module; Postgres is wired
+# and ready for when the data layer (pgx/sqlc/River) lands. An HTTPS reverse
+# proxy terminates TLS in front of the api in production.
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: rtm
+      POSTGRES_PASSWORD: rtm
+      POSTGRES_DB: rtm
+    ports:
+      - "5432:5432"
+    volumes:
+      - rtm_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rtm"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+      target: api
+    environment:
+      RTM_ENV: production
+      RTM_HTTP_ADDR: ":8080"
+      RTM_DATABASE_URL: postgres://rtm:rtm@db:5432/rtm?sslmode=disable
+      RTM_CORS_ORIGIN: http://localhost:8088
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  worker:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+      target: worker
+    environment:
+      RTM_ENV: production
+      RTM_DATABASE_URL: postgres://rtm:rtm@db:5432/rtm?sslmode=disable
+    depends_on:
+      db:
+        condition: service_healthy
+
+  web:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    ports:
+      - "8088:80"
+    depends_on:
+      - api
+
+volumes:
+  rtm_pgdata:

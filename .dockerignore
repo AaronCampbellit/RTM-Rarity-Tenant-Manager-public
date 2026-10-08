@@ -1,0 +1,16 @@
+.git
+.codex
+.playwright
+.playwright-cli
+**/.env
+**/.env.*
+**/*.local
+**/*.pem
+**/*.key
+secrets
+**/node_modules
+**/dist
+backend/bin
+**/coverage
+**/.DS_Store
+.claude

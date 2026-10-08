@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "purpose": "Exact unmodified MPL-covered River sources delivered beside executables; original RTM material remains separately licensed.",
+  "modules": [
+    {
+      "module": "github.com/riverqueue/river",
+      "version": "v0.39.0",
+      "license": "MPL-2.0; retain component-specific nested terms",
+      "source_archive": "third-party-sources/github.com--riverqueue--river-v0.39.0.zip",
+      "source_url": "https://proxy.golang.org/github.com/riverqueue/river/@v/v0.39.0.zip",
+      "sha256": "dabcfd44303797382d2eb599829859d872e27322bf8ffbfe079db50de80de93b",
+      "go_sum": "h1:VsoPJ8KTx7SvWQGWtdLjKxw15IjnYHj3xKb0UA+7200=",
+      "modified": false
+    },
+    {
+      "module": "github.com/riverqueue/river/riverdriver",
+      "version": "v0.39.0",
+      "license": "MPL-2.0; retain component-specific nested terms",
+      "source_archive": "third-party-sources/github.com--riverqueue--river--riverdriver-v0.39.0.zip",
+      "source_url": "https://proxy.golang.org/github.com/riverqueue/river/riverdriver/@v/v0.39.0.zip",
+      "sha256": "0fbf29b6f30d9c2f7f8d3aeaa45d27841f4b06ce3e4d3d17528b51cb3ab5e5ac",
+      "go_sum": "h1:Vze5DtNJkxStjIlbDDwtxqk9wB2THn1RKEk5C5CZgFg=",
+      "modified": false
+    },
+    {
+      "module": "github.com/riverqueue/river/riverdriver/riverpgxv5",
+      "version": "v0.39.0",
+      "license": "MPL-2.0; retain component-specific nested terms",
+      "source_archive": "third-party-sources/github.com--riverqueue--river--riverdriver--riverpgxv5-v0.39.0.zip",
+      "source_url": "https://proxy.golang.org/github.com/riverqueue/river/riverdriver/riverpgxv5/@v/v0.39.0.zip",
+      "sha256": "e517c7266efb4715597c2480d77fda7b66cba8c535969144c47a4185a673ff13",
+      "go_sum": "h1:pIwYuKUUakIyVlmI2g5J4U/Hf8+e+ih0hGRDH1sA+x8=",
+      "modified": false
+    },
+    {
+      "module": "github.com/riverqueue/river/rivershared",
+      "version": "v0.39.0",
+      "license": "MPL-2.0; retain component-specific nested terms",
+      "source_archive": "third-party-sources/github.com--riverqueue--river--rivershared-v0.39.0.zip",
+      "source_url": "https://proxy.golang.org/github.com/riverqueue/river/rivershared/@v/v0.39.0.zip",
+      "sha256": "eb71b209ca36218f89b078048e480ed8d2177345a837c9a820526de1a5d8bb9e",
+      "go_sum": "h1:Ca5fe4Atbvb8cAq09YUzAi/G5ZslthjuYLpAvtNrHTg=",
+      "modified": false
+    },
+    {
+      "module": "github.com/riverqueue/river/rivertype",
+      "version": "v0.39.0",
+      "license": "MPL-2.0; retain component-specific nested terms",
+      "source_archive": "third-party-sources/github.com--riverqueue--river--rivertype-v0.39.0.zip",
+      "source_url": "https://proxy.golang.org/github.com/riverqueue/river/rivertype/@v/v0.39.0.zip",
+      "sha256": "96e49ef6ce47c0a0f3c0b056279f7d3db75947d4714169f42641230130d9acb3",
+      "go_sum": "h1:0jHUTRDR1kdzbgXc6lN1B93WxolZyqPvqpYE+r0+R4o=",
+      "modified": false
+    }
+  ]
+}

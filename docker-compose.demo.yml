@@ -1,0 +1,108 @@
+# RTM full-stack demo in a dedicated Compose project.
+#
+# Postgres + Go API + River worker + web (live mode, real auth). Scoped entirely
+# under the "rtm" compose project so it never collides with the Hank containers.
+# Host ports 8090/8091 avoid everything already listening on the box; Postgres
+# stays internal to the rtm network.
+#
+#   docker compose -p rtm -f docker-compose.demo.yml up --build -d
+#
+# First login: admin@rtm.local / ChangeMe!2026 — the GUI forces a password
+# change before anything else works. Demo technicians: aisha.rivera@rarity.io
+# and david.chen@rarity.io (password RtmDemo!2026, non-admin operators).
+# Authenticated operators can read every managed tenant; elevated permissions
+# control administration and change execution. Use synthetic demo tenants only.
+
+name: rtm
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: rtm
+      POSTGRES_PASSWORD: rtm
+      POSTGRES_DB: rtm
+    volumes:
+      - rtm_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rtm"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+    restart: unless-stopped
+
+  api:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+      target: api
+    environment:
+      RTM_ENV: production
+      RTM_HTTP_ADDR: ":8080"
+      RTM_DATABASE_URL: postgres://rtm:rtm@db:5432/rtm?sslmode=disable
+      RTM_JWT_SIGNING_KEY: "${RTM_JWT_SIGNING_KEY:?set RTM_JWT_SIGNING_KEY in .env}"
+      RTM_FIELD_ENCRYPTION_KEY: "${RTM_FIELD_ENCRYPTION_KEY:?set RTM_FIELD_ENCRYPTION_KEY in .env}"
+      RTM_CORS_ORIGIN: "http://192.168.86.139:8090"
+      # Entra app registration (optional). Put these in ~/rtm-demo/.env on the
+      # box to flip the Graph provider from sample → live; empty = sample data.
+      # The deploy rsync excludes .env, so the file survives redeploys.
+      RTM_ENTRA_CLIENT_ID: "${RTM_ENTRA_CLIENT_ID:-}"
+      RTM_ENTRA_CLIENT_SECRET: "${RTM_ENTRA_CLIENT_SECRET:-}"
+      RTM_ENTRA_TENANT_ID: "${RTM_ENTRA_TENANT_ID:-}"
+      RTM_SHAREPOINT_CLIENT_ID: "${RTM_SHAREPOINT_CLIENT_ID:-}"
+      RTM_SHAREPOINT_CERTIFICATE_PATH: "${RTM_SHAREPOINT_CERTIFICATE_PATH:-}"
+      RTM_SHAREPOINT_PRIVATE_KEY_PATH: "${RTM_SHAREPOINT_PRIVATE_KEY_PATH:-}"
+      RTM_THREATLOCKER_INSTANCE: "${RTM_THREATLOCKER_INSTANCE:-}"
+      RTM_THREATLOCKER_TOKEN: "${RTM_THREATLOCKER_TOKEN:-}"
+      RTM_THREATLOCKER_PARENT_ORG_ID: "${RTM_THREATLOCKER_PARENT_ORG_ID:-}"
+    ports:
+      - "8091:8080"
+    volumes:
+      - ./secrets/sharepoint:/run/rtm-secrets:ro
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  worker:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+      target: worker
+    environment:
+      RTM_ENV: production
+      RTM_DATABASE_URL: postgres://rtm:rtm@db:5432/rtm?sslmode=disable
+      RTM_JWT_SIGNING_KEY: "${RTM_JWT_SIGNING_KEY:?set RTM_JWT_SIGNING_KEY in .env}"
+      RTM_FIELD_ENCRYPTION_KEY: "${RTM_FIELD_ENCRYPTION_KEY:?set RTM_FIELD_ENCRYPTION_KEY in .env}"
+      # The worker needs the same global fallback app as the API for Graph
+      # writes and the separately-tokened Management Activity connector.
+      RTM_ENTRA_CLIENT_ID: "${RTM_ENTRA_CLIENT_ID:-}"
+      RTM_ENTRA_CLIENT_SECRET: "${RTM_ENTRA_CLIENT_SECRET:-}"
+      RTM_ENTRA_TENANT_ID: "${RTM_ENTRA_TENANT_ID:-}"
+      RTM_SHAREPOINT_CLIENT_ID: "${RTM_SHAREPOINT_CLIENT_ID:-}"
+      RTM_SHAREPOINT_CERTIFICATE_PATH: "${RTM_SHAREPOINT_CERTIFICATE_PATH:-}"
+      RTM_SHAREPOINT_PRIVATE_KEY_PATH: "${RTM_SHAREPOINT_PRIVATE_KEY_PATH:-}"
+      RTM_THREATLOCKER_INSTANCE: "${RTM_THREATLOCKER_INSTANCE:-}"
+      RTM_THREATLOCKER_TOKEN: "${RTM_THREATLOCKER_TOKEN:-}"
+      RTM_THREATLOCKER_PARENT_ORG_ID: "${RTM_THREATLOCKER_PARENT_ORG_ID:-}"
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./secrets/sharepoint:/run/rtm-secrets:ro
+    restart: unless-stopped
+
+  web:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+      args:
+        VITE_USE_MOCK: "false"
+    ports:
+      - "8090:80"
+    depends_on:
+      - api
+    restart: unless-stopped
+
+volumes:
+  rtm_pgdata:

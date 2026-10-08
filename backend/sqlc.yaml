@@ -1,0 +1,14 @@
+# sqlc generates typed data access from SQL (ADR-018; SQL-first, no ORM in v1).
+# Add query files under internal/db/queries, then run `sqlc generate`.
+version: "2"
+sql:
+  - engine: "postgresql"
+    schema: "migrations"
+    queries: "internal/db/queries"
+    gen:
+      go:
+        package: "db"
+        out: "internal/db"
+        sql_package: "pgx/v5"
+        emit_json_tags: true
+        emit_pointers_for_null_types: true

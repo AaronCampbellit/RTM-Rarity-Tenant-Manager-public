@@ -1,0 +1,17 @@
+# Dependencies / build output
+node_modules/
+frontend/dist/
+frontend/*.tsbuildinfo
+backend/bin/
+
+# Env / secrets
+.env
+.env.local
+*.local
+
+# OS / editor
+.DS_Store
+*.log
+
+# Local coding-agent launch settings are not portfolio source artifacts.
+.claude/
